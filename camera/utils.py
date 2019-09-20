@@ -34,4 +34,4 @@ def get_largest_face_polygon(faces):
             right = f_right
             top = f_top
             bottom = f_bottom
-    return left, top, right, bottom
+    return (left, top, right, bottom), largest_area
