@@ -2,7 +2,7 @@ import cv2
 import dlib
 import numpy as np
 
-from camera.callbacks import calculate_naive_bounding_box
+from camera.utils import calculate_naive_mask_bounding_box
 
 cap = cv2.VideoCapture(0)
 
@@ -43,7 +43,7 @@ while True:
     faces = detector(gray)
     green_mask = cv2.inRange(hsv, low_green, high_green)
     green = cv2.bitwise_and(frame, frame, mask=green_mask)
-    gx1, gy1, gx2, gy2 = calculate_naive_bounding_box(green)
+    gx1, gy1, gx2, gy2 = calculate_naive_mask_bounding_box(green)
     largest_face_coordinates = _get_largest_face_polygon(faces)
 
     if (gx1, gy1, gx2, gy2) != (0, 0, 0, 0):
