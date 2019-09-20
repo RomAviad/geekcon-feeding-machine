@@ -20,13 +20,14 @@ high_blue = np.array([126, 255, 255])
 
 cleaner = Cleaner()
 controllers = Controllers()
+controllers.enable()
 
 while True:
     _, frame = cap.read()
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
     last = {}
-    # faces = detector(gray)
+
     faces = detector.detectMultiScale(
         gray,
         scaleFactor=1.1,
@@ -41,9 +42,7 @@ while True:
         cv2.putText(frame, "Come Closer", (largest_face_coordinates[0], largest_face_coordinates[1]),
                     cv2.FONT_HERSHEY_PLAIN, 3, (0, 0, 255))
         cleaner.turn_off()
-        controllers.disable()
     else:
-        controllers.enable()
         if (gx1, gy1, gx2, gy2) != (0, 0, 0, 0):
             cv2.rectangle(frame, (gx1, gy1), (gx2, gy2), (0, 255, 255), 3)
             cleaner.turn_on()
@@ -58,26 +57,6 @@ while True:
             color = (0, 255, 0) if (x1, y1, x2, y2) == largest_face_coordinates else (255, 0, 0)
             cv2.rectangle(frame, (x1, y1), (x2, y2), color, 3)
 
-        # landmarks = predictor(gray, face)
-        #
-        # for n in range(68):
-        #     x = landmarks.part(n).x
-        #     y = landmarks.part(n).y
-        #     last_x, last_y = last.get(n, (0, 0))
-        #     # if n > 50:
-        #         # print(f"{n} last: {(last_x, last_y)}; new: {(x, y)}")
-        #     diff_x = abs(x-last_x)
-        #     diff_y = abs(y-last_y)
-        #     # print(f"{n} diff: {diff_x, diff_y}")
-        #     color = (255, 0, 0) if diff_x > 2 or diff_y > 2 else (0, 0, 255)
-        #     cv2.circle(frame, (x, y), 4, color, -1)
-        #     if not (x == 0 and y == 0):
-        #         # print(f"setting last[{n}]=({x},{y})")
-        #         last[n] = (x, y)
-    # keypoints = blober.detect(gray)
-    # im_with_keypoints = cv2.drawKeypoints(gray, keypoints, np.array([]), (0, 0, 255),
-    #                                       cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
-    # cv2.imshow("Keypoints", im_with_keypoints)
     cv2.imshow("Frame", frame)
 
     key = cv2.waitKey(1)
