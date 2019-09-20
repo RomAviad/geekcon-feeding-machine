@@ -1,13 +1,12 @@
 import cv2
-import dlib
 import numpy as np
 
 from camera.utils import calculate_naive_mask_bounding_box, get_largest_face_polygon
 
 cap = cv2.VideoCapture(0)
 
-detector = dlib.get_frontal_face_detector()
-predictor = dlib.shape_predictor("resources/shape_predictor_68_face_landmarks.dat")
+cascPath = "resources/haarcascade_frontalface_default.xml"
+detector = faceCascade = cv2.CascadeClassifier(cascPath)
 
 # low_green = np.array([60, 52, 72])
 low_green = np.array([60, 120, 120])
@@ -22,7 +21,13 @@ while True:
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
     last = {}
-    faces = detector(gray)
+    # faces = detector(gray)
+    faces = detector.detectMultiScale(
+        gray,
+        scaleFactor=1.1,
+        minNeighbors=5,
+        minSize=(30, 30)
+    )
     green_mask = cv2.inRange(hsv, low_green, high_green)
     green = cv2.bitwise_and(frame, frame, mask=green_mask)
     gx1, gy1, gx2, gy2 = calculate_naive_mask_bounding_box(green)
@@ -33,10 +38,10 @@ while True:
         # TODO - trigger cleaner
 
     for face in faces:
-        x1 = face.left()
-        y1 = face.top()
-        x2 = face.right()
-        y2 = face.bottom()
+        x1 = face[0]
+        y1 = face[1]
+        x2 = face[0] + face[2]
+        y2 = face[1] + face[3]
         color = (0, 255, 0) if (x1, y1, x2, y2) == largest_face_coordinates else (255, 0, 0)
         cv2.rectangle(frame, (x1, y1), (x2, y2), color, 3)
 

@@ -23,10 +23,10 @@ def get_largest_face_polygon(faces):
     largest_area = 0
     left, right, top, bottom = 0, 0, 0, 0
     for face in faces:
-        f_left = face.left()
-        f_right = face.right()
-        f_top = face.top()
-        f_bottom = face.bottom()
+        f_left = face[0]
+        f_top = face[1]
+        f_right = face[0] + face[2]
+        f_bottom = face[1] + face[3]
         area = abs(f_right - f_left) * abs(f_top - f_bottom)
         if area > largest_area:
             largest_area = area
