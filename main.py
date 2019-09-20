@@ -2,7 +2,7 @@ import cv2
 import dlib
 import numpy as np
 
-from camera.utils import calculate_naive_mask_bounding_box
+from camera.utils import calculate_naive_mask_bounding_box, get_largest_face_polygon
 
 cap = cv2.VideoCapture(0)
 
@@ -17,24 +17,6 @@ high_red = np.array([179, 255, 255])
 low_blue = np.array([94, 80, 2])
 high_blue = np.array([126, 255, 255])
 
-
-def _get_largest_face_polygon(faces):
-    largest_area = 0
-    left, right, top, bottom = 0, 0, 0, 0
-    for face in faces:
-        f_left = face.left()
-        f_right = face.right()
-        f_top = face.top()
-        f_bottom = face.bottom()
-        area = abs(f_right - f_left) * abs(f_top - f_bottom)
-        if area > largest_area:
-            largest_area = area
-            left = f_left
-            right = f_right
-            top = f_top
-            bottom = f_bottom
-    return left, top, right, bottom
-
 while True:
     _, frame = cap.read()
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -44,7 +26,7 @@ while True:
     green_mask = cv2.inRange(hsv, low_green, high_green)
     green = cv2.bitwise_and(frame, frame, mask=green_mask)
     gx1, gy1, gx2, gy2 = calculate_naive_mask_bounding_box(green)
-    largest_face_coordinates = _get_largest_face_polygon(faces)
+    largest_face_coordinates = get_largest_face_polygon(faces)
 
     if (gx1, gy1, gx2, gy2) != (0, 0, 0, 0):
         cv2.rectangle(frame, (gx1, gy1), (gx2, gy2), (0, 255, 255), 3)

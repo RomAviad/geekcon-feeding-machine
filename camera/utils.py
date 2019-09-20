@@ -17,3 +17,21 @@ def calculate_naive_mask_bounding_box(img):
         max_y = non_zeros[1].max()
 
     return min_x, min_y, max_x, max_y
+
+
+def get_largest_face_polygon(faces):
+    largest_area = 0
+    left, right, top, bottom = 0, 0, 0, 0
+    for face in faces:
+        f_left = face.left()
+        f_right = face.right()
+        f_top = face.top()
+        f_bottom = face.bottom()
+        area = abs(f_right - f_left) * abs(f_top - f_bottom)
+        if area > largest_area:
+            largest_area = area
+            left = f_left
+            right = f_right
+            top = f_top
+            bottom = f_bottom
+    return left, top, right, bottom
